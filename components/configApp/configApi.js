@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://api-chatbot-asistente-openia.langpi.online';
+export const BASE_URL = 'backend-api-url';
