@@ -74,7 +74,11 @@ const {
                     rules={{
                       required: {
                         value: true,
-                        message: "nombre requerido",
+                        message: "Nombre requerido",
+                      },
+                      pattern:{
+                        value: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/,
+                        message: "Nombre inválido"
                       }
                     }}
                     render={({ field: { onChange, onBlur, value } }) => (
@@ -107,7 +111,7 @@ const {
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
                         style={styles.textInput}
-                        placeholder="CONTRASEÑA"
+                        placeholder="Contraseña"
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -141,17 +145,6 @@ const {
                 )}
               </TouchableOpacity>
             </View>
-            {/* <View
-              style={{
-                justifyContent: 'flex-end',
-                alignItems: 'flex-end',
-                marginTop: 8,
-                marginRight: 10,
-              }}>
-              <Text style={{color: '#420475', fontWeight: '700'}}>
-                Olvidaste tu contraseña?
-              </Text>
-            </View> */}
           </View>
           <View style={styles.button}>
             <TouchableOpacity style={styles.inBut} onPress={() => enviar()}>

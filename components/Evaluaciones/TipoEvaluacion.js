@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Alert, ActivityIndicator} from 'react-native';
 import { getPreguntasByIdPrueba, registrarRespuestas } from '../../api/evaluacionesConsultas';
 import { Authoco } from '../../context/auth.context';
 import { useForm, Controller} from 'react-hook-form';
@@ -8,6 +8,9 @@ export default Evaluaciones = ({ navigation, route }) => {
   const { control, handleSubmit, formState: { errors } } = useForm();
   const [preguntas, setPreguntas] = useState([]);
   const [respuestasIncorrectas, setRespuestasIncorrectas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showResults, setShowResults] = useState(false);
+  const [score, setScore] = useState(0);
   const { tipoPrueba } = route.params;
   const { userInfo } = useContext(Authoco);
 
@@ -17,12 +20,13 @@ export default Evaluaciones = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    obtenerPreguntas(tipoPrueba.id);
+    const fetchData = async () => {
+      setIsLoading(true)
+      await Promise.all([obtenerPreguntas(tipoPrueba.id)])
+      setIsLoading(false)
+    }
+    fetchData()
   }, []);
-
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [showResults, setShowResults] = useState(false);
-  const [score, setScore] = useState(0);
 
   const onSubmit = async (data) => {
     let tempScore = 0;
@@ -91,7 +95,7 @@ export default Evaluaciones = ({ navigation, route }) => {
           </>
         )}
       />
-      {showResults && value !== undefined && (
+      {showResults && (
         <View style={styles.resultContainer}>
           {value !== item.options.find(option => option.correcto).id ? (
             <Text style={styles.incorrectText}>
@@ -104,6 +108,15 @@ export default Evaluaciones = ({ navigation, route }) => {
       )}
     </View>
   );
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#3399ff" />
+        <Text style={styles.loadingText}>Cargando Preguntas...</Text>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -129,25 +142,29 @@ export default Evaluaciones = ({ navigation, route }) => {
           />
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() => {navigation.navigate('Evaluaciones')}}
+            onPress={() => {
+              navigation.navigate("Evaluaciones");
+            }}
           >
             <Text style={styles.submitButtonText}>Regresar</Text>
           </TouchableOpacity>
         </>
       ) : (
-        <FlatList
-          data={preguntas}
-          renderItem={renderQuestion}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      )}
-      {!showResults && (
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit(onSubmit)}
-        >
-          <Text style={styles.submitButtonText}>Enviar Respuestas</Text>
-        </TouchableOpacity>
+        <>
+          <Text style={styles.questionText}>{tipoPrueba.tipo}</Text>
+          <Text style={styles.questionText}>Selecciona la opción correcta</Text>
+          <FlatList
+            data={preguntas}
+            renderItem={renderQuestion}
+            keyExtractor={(item) => item.id.toString()}
+          />
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text style={styles.submitButtonText}>Enviar Respuestas</Text>
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
@@ -166,6 +183,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 18,
     marginBottom: 10,
+    fontWeight: 'bold'
   },
   optionButton: {
     padding: 10,
@@ -232,5 +250,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6def7',
     paddingVertical: 1,
     paddingHorizontal: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#3399ff',
+    fontSize: 16,
+    marginTop: 10,
   }
 });
