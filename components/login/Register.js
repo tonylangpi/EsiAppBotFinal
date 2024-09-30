@@ -68,7 +68,7 @@ const {
             />
           </View>
           <View style={styles.loginContainer}>
-            <Text style={styles.text_header}>Registrate!!!</Text>
+            <Text style={styles.text_header}>Ingresa tu información</Text>
   
             <View style={styles.action}>
               <FontAwesome
@@ -81,13 +81,17 @@ const {
                     rules={{
                       required: {
                         value: true,
-                        message: "nombre requerido",
-                      }
+                        message: "Nombre requerido",
+                      },
+                      pattern: {
+                        value: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/,
+                        message: "Nombre invalido",
+                      },
                     }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
                         style={styles.textInput}
-                        placeholder="Nombre"
+                        placeholder="Un nombre"
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -102,24 +106,27 @@ const {
                   )}
             </View>
             <View style={styles.action}>
-              <Fontisto
-                name="email"
+            <FontAwesome
+                name="user-o"
                 color="#420475"
-                size={24}
-                style={{marginLeft: 0, paddingRight: 5}}
+                style={styles.smallIcon}
               />
                 <Controller
                     control={control}
                     rules={{
                       required: {
                         value: true,
-                        message: "apellido requerido",
+                        message: "Apellido requerido",
+                      },
+                      pattern:{
+                        value: /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/,
+                        message: "Apellido invalido",
                       }
                     }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
                         style={styles.textInput}
-                        placeholder="Apellido"
+                        placeholder="Un apellido"
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -146,7 +153,7 @@ const {
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
                         style={styles.textInput}
-                        placeholder="Contraseña"
+                        placeholder="Contraseña (anótala para después)"
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
