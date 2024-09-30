@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 const LoadingChat = () => {
     return (
       <View style={styles.container}>
-        <Text>Escribiendo...</Text>
+        <Text>Esi está escribiendo...</Text>
         <ActivityIndicator size="small" color="#0000ff" />
       </View>
     );

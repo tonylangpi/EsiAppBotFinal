@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
 import {getTipoPruebas, getHistoryChat} from '../../api/evaluacionesConsultas'
 import { Authoco } from '../../context/auth.context';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -7,6 +7,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 export default Evaluaciones = ({navigation}) => {
  const [tiposPruebas, setTiposPruebas] = useState([])
  const [historialChat, setHistorialChat] = useState([])
+ const [isLoading, setIsLoading] = useState(true)
  const {userInfo} = useContext(Authoco)
 
  const obtenerTipoPruebas = async () => {
@@ -14,20 +15,35 @@ export default Evaluaciones = ({navigation}) => {
     setTiposPruebas(data)
  }
 
- const obtenerHistorialChat = async () => {
-    const data  = await getHistoryChat(userInfo.id)
+ const obtenerHistorialChat = async (id) => {
+    const data  = await getHistoryChat(id)
     setHistorialChat(data)
   }
 
   useEffect(() => {
-    obtenerTipoPruebas()
-    obtenerHistorialChat(userInfo.id)
+    const fetchData = async () => {
+      setIsLoading(true)
+      await Promise.all([obtenerTipoPruebas(), obtenerHistorialChat(userInfo.id)])
+      setIsLoading(false)
+    }
+    fetchData()
   },[])
 
 
   const clickEventListener = item => {
     navigation.navigate('TipoEvaluacion', {tipoPrueba: item})
   }
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#3399ff" />
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </View>
+    )
+  }
+
+
   return (
       historialChat.length > 0 ? (
         <View style={styles.container}>
@@ -56,7 +72,7 @@ export default Evaluaciones = ({navigation}) => {
         <View style={styles.container}>
           <Text style={{ textAlign: 'center', fontSize: 20, color: '#3399ff', fontWeight: 'bold' }}>
             No hay historial de chat,
-            antes de hacerte pruebas discute con Esi Bot
+            antes de hacerte pruebas discute con EsiBot
           </Text>
           <View
                 style={{
@@ -156,5 +172,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     flex: 1,
     alignSelf: 'center'
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#3399ff',
+    fontSize: 16,
+    marginTop: 10,
   }
 })

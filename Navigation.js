@@ -23,7 +23,7 @@ export default function Navigation(){
                 options={{ headerShown: false }}
                 component={HomeScreen}
               />
-              <Stack.Screen name="Chatbot" component={Chatbot} />
+              <Stack.Screen name="Chatbot" options={{headerShown:false}} component={Chatbot} />
               <Stack.Screen name="Evaluaciones" options={{headerShown:false}} component={Evaluaciones} />
               <Stack.Screen name="TipoEvaluacion" component={TipoEvaluaciones} />
             </>
